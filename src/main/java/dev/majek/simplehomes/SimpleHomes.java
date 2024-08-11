@@ -10,6 +10,7 @@ import dev.majek.simplehomes.data.struct.HomesPlayer;
 import dev.majek.simplehomes.mechanic.PlayerJoin;
 import dev.majek.simplehomes.mechanic.PlayerMove;
 import dev.majek.simplehomes.mechanic.PlayerRespawn;
+import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -18,6 +19,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -34,6 +36,7 @@ public final class SimpleHomes extends JavaPlugin {
     private final Map<UUID, HomesPlayer> userMap;
     private FileConfiguration lang;
     public boolean hasPapi = false;
+    private BukkitAudiences adventure;
 
     public SimpleHomes() {
         core = this;
@@ -43,6 +46,7 @@ public final class SimpleHomes extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        this.adventure = BukkitAudiences.create(this);
 
         // Update config.yml and lang.yml
         reload();
@@ -88,6 +92,14 @@ public final class SimpleHomes extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerJoin(), this);
         getServer().getPluginManager().registerEvents(new PlayerMove(), this);
         getServer().getPluginManager().registerEvents(new PlayerRespawn(), this);
+    }
+
+    @Override
+    public void onDisable() {
+        if(this.adventure != null) {
+            this.adventure.close();
+            this.adventure = null;
+        }
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -200,9 +212,17 @@ public final class SimpleHomes extends JavaPlugin {
      * @param location Teleport destination.
      */
     public void safeTeleportPlayer(final Player player, final Location location) {
-        player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 140, 7));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, 140, 7));
         player.teleport(location);
         player.setFallDistance(0);
         player.setVelocity(new Vector(0, 0.3, 0));
     }
+
+    public @NonNull BukkitAudiences adventure() {
+        if(this.adventure == null) {
+            throw new IllegalStateException("Tried to access Adventure when the plugin was disabled!");
+        }
+        return this.adventure;
+    }
+
 }

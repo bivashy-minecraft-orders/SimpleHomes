@@ -4,8 +4,6 @@ import dev.majek.simplehomes.SimpleHomes;
 import dev.majek.simplehomes.data.PAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -16,23 +14,14 @@ import org.bukkit.entity.Player;
  */
 public interface TabExecutor extends TabCompleter, CommandExecutor {
 
-    @SuppressWarnings("deprecation")
     default void sendFormattedMessage(CommandSender sender, Component message) {
-        try {
-            sender.sendMessage(message);
-        } catch (NoSuchMethodError error1) {
-            try {
-                sender.spigot().sendMessage(BungeeComponentSerializer.get().serialize(message));
-            } catch (NoSuchMethodError error2) {
-                sender.sendMessage(LegacyComponentSerializer.legacySection().serialize(message));
-            }
-        }
+        SimpleHomes.core().adventure().sender(sender).sendMessage(message);
     }
 
     default void sendFormattedMessage(CommandSender sender, String message) {
         if (SimpleHomes.core().hasPapi && (sender instanceof Player))
             message = PAPI.applyPlaceholders((Player) sender, message);
-        sendFormattedMessage(sender, MiniMessage.get().parse(message));
+        sendFormattedMessage(sender, MiniMessage.miniMessage().deserialize(message));
     }
 
     default void sendMessage(CommandSender sender, String path) {
