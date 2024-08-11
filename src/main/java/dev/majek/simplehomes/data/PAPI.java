@@ -1,12 +1,17 @@
 package dev.majek.simplehomes.data;
 
 import dev.majek.simplehomes.SimpleHomes;
+import dev.majek.simplehomes.data.struct.Home;
+import dev.majek.simplehomes.data.struct.HomesPlayer;
 import me.clip.placeholderapi.PlaceholderAPI;
-import me.clip.placeholderapi.PlaceholderAPIPlugin;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Handles PlaceholderAPI integration
@@ -14,49 +19,47 @@ import org.jetbrains.annotations.NotNull;
 public class PAPI extends PlaceholderExpansion {
 
     private final SimpleHomes plugin;
-    private String yes;
-    private String no;
 
-    public PAPI(SimpleHomes plugin){
+    public PAPI(SimpleHomes plugin) {
         this.plugin = plugin;
-        try {
-            yes = PlaceholderAPIPlugin.booleanTrue();
-            no = PlaceholderAPIPlugin.booleanFalse();
-        } catch (Exception err) {
-            plugin.getLogger().info("Unable to hook into PAPI API for boolean results. Defaulting...");
-        }
     }
 
     @Override
-    public boolean canRegister(){
+    public boolean canRegister() {
         return true;
     }
 
     @Override
-    public boolean persist(){
+    public boolean persist() {
         return true;
     }
 
     @Override
-    public @NotNull String getAuthor(){
-        return plugin.getDescription().getAuthors().get(0);
+    public @NotNull String getAuthor() {
+        return String.join(", ", plugin.getDescription().getAuthors());
     }
 
     @Override
-    public @NotNull String getIdentifier(){
-        return plugin.getDescription().getName().toLowerCase();
+    public @NotNull String getIdentifier() {
+        return "home";
     }
 
     @Override
-    public @NotNull String getVersion(){
+    public @NotNull String getVersion() {
         return plugin.getDescription().getVersion();
     }
 
     @Override
     public String onRequest(OfflinePlayer player, @NotNull String identifier) {
-
-
-
+        HomesPlayer homesPlayer = SimpleHomes.core().getHomesPlayer(player.getUniqueId());
+        String[] identifiers = identifier.split("_");
+        if (identifier.equals("count"))
+            return Integer.toString(homesPlayer.getTotalHomes());
+        if (identifiers.length == 2 && identifiers[0].equals("home")) {
+            int index = Integer.parseInt(identifiers[1]);
+            List<Home> sortedHomes = homesPlayer.getHomes().stream().sorted(Comparator.comparing(Home::name)).collect(Collectors.toList());
+            return sortedHomes.get(index).name();
+        }
         return null;
     }
 
