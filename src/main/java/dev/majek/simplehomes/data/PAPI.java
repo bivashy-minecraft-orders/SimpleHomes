@@ -9,6 +9,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -55,7 +56,7 @@ public class PAPI extends PlaceholderExpansion {
         String[] identifiers = identifier.split("_");
         if (identifier.equals("count"))
             return Integer.toString(homesPlayer.getTotalHomes());
-        if (identifiers.length == 2 && identifiers[0].equals("home")) {
+        if (identifiers.length == 2 && identifiers[0].equals("name")) {
             int index = Integer.parseInt(identifiers[1]);
             List<Home> sortedHomes = homesPlayer.getHomes().stream().sorted(Comparator.comparing(Home::name)).collect(Collectors.toList());
             return sortedHomes.get(index).name();
