@@ -59,7 +59,7 @@ public class PAPI extends PlaceholderExpansion {
         if (identifiers.length == 2 && identifiers[0].equals("name")) {
             int index = Integer.parseInt(identifiers[1]);
             List<Home> sortedHomes = homesPlayer.getHomes().stream().sorted(Comparator.comparing(Home::name)).collect(Collectors.toList());
-            return sortedHomes.get(index).name();
+            return sortedHomes.get(index - 1).name();
         }
         return null;
     }
