@@ -2,6 +2,7 @@ package dev.majek.simplehomes.data.struct;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import dev.majek.simplehomes.SimpleHomes;
 import dev.majek.simplehomes.data.JSONConfig;
 import org.bukkit.entity.Player;
@@ -64,7 +65,9 @@ public class HomesPlayer {
             JsonObject homesJson = fileContents.get("homes").getAsJsonObject();
             for (Map.Entry<String, JsonElement> entry : homesJson.entrySet()) {
                 try {
-                    Home newHome = new Home(entry.getKey(), entry.getValue().getAsJsonObject());
+                    String name = entry.getKey();
+                    JsonObject homeObject = entry.getValue().getAsJsonObject();
+                    Home newHome = new Home(name, homeObject.get("location").getAsJsonObject(), homeObject.get("currentTimestamp").getAsLong());
                     addHome(newHome);
                 } catch (IllegalArgumentException ex) {
                     ex.printStackTrace();
@@ -156,9 +159,11 @@ public class HomesPlayer {
                 this.dataStorage.putInJsonObject("homes", new JsonObject());
                 homes = this.dataStorage.toJsonObject().getAsJsonObject("homes");
             }
-            homes.add(
-                    home.name(),
-                    home.locAsJsonObject());
+            JsonObject homeObject = new JsonObject();
+            JsonObject location = home.locAsJsonObject();
+            homeObject.add("location", location);
+            homeObject.add("creationTimestamp", new JsonPrimitive(home.creationTimestamp()));
+            homes.add(home.name(), homeObject);
             dataStorage.putInJsonObject("homes", homes);
         } catch (IOException e) {
             e.printStackTrace();

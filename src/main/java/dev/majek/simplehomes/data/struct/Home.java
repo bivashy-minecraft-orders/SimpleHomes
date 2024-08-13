@@ -1,7 +1,6 @@
 package dev.majek.simplehomes.data.struct;
 
 import com.google.gson.*;
-import dev.majek.simplehomes.SimpleHomes;
 import org.bukkit.Location;
 
 import java.util.Map;
@@ -19,6 +18,10 @@ public class Home {
      * Location of the home.
      */
     private Location location;
+    /**
+     * Creation timestamp
+     */
+    private long creationTimestamp;
 
     /**
      * Create a new player home from {@link dev.majek.simplehomes.command.CommandSetHome}.
@@ -26,8 +29,19 @@ public class Home {
      * @param location The {@link Location} of the home.
      */
     public Home(String name, Location location) {
+        this(name, location, System.currentTimeMillis());
+    }
+
+    /**
+     * Create a new player home from {@link dev.majek.simplehomes.command.CommandSetHome}.
+     * @param name The name of the home.
+     * @param location The {@link Location} of the home.
+     * @param creationTimestamp The timestamp when home was created.
+     */
+    public Home(String name, Location location, long creationTimestamp) {
         this.name = name;
         this.location = location;
+        this.creationTimestamp = creationTimestamp;
     }
 
     /**
@@ -36,7 +50,7 @@ public class Home {
      * @param serializedLocation Serialized {@link Location} using {@link Location#serialize()}.
      */
     @SuppressWarnings("unchecked")
-    public Home(String name, JsonObject serializedLocation) throws IllegalArgumentException {
+    public Home(String name, JsonObject serializedLocation, long creationTimestamp) throws IllegalArgumentException {
         this.name = name;
         try {
             this.location = Location.deserialize(new Gson().fromJson(serializedLocation, Map.class));
@@ -45,6 +59,7 @@ public class Home {
                 "name of one of your worlds. Please either change it back or manually change the world names" +
                 "stored in user files in the playerdata folder. Need help? https://discord.majek.dev");
         }
+        this.creationTimestamp = creationTimestamp;
     }
 
     /**
@@ -69,6 +84,14 @@ public class Home {
      */
     public Location location() {
         return location;
+    }
+
+    /**
+     * Get the creation timestamp of the home.
+     * @return Creation timestamp.
+     */
+    public long creationTimestamp() {
+        return creationTimestamp;
     }
 
     /**
