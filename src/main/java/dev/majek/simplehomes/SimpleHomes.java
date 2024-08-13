@@ -82,6 +82,10 @@ public final class SimpleHomes extends JavaPlugin {
             hasPapi = true;
         }
 
+        if (this.getServer().getPluginManager().isPluginEnabled("AbstractMenus")) {
+            GuiHomeCatalog.register();
+        }
+
         // Metrics
         new Metrics(this, 11490);
 

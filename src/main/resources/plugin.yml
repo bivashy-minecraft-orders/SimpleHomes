@@ -3,6 +3,8 @@ version: ${project.version}
 main: dev.majek.simplehomes.SimpleHomes
 api-version: 1.13
 authors: [ Majekdor ]
+softdepend:
+  - AbstractMenus
 description: Base homes plugin with all the essential features.
 website: https://majek.dev
 commands:
