@@ -12,12 +12,17 @@ import ru.abstractmenus.hocon.api.serialize.NodeSerializeException;
 import ru.abstractmenus.hocon.api.serialize.NodeSerializer;
 
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.stream.Collectors;
 
 public class GuiHomeCatalog implements Catalog<Home> {
 
     @Override
     public Collection<Home> snapshot(Player player, Menu menu) {
-        return SimpleHomes.core().getHomesPlayer(player.getUniqueId()).getHomes();
+        return SimpleHomes.core().getHomesPlayer(player.getUniqueId()).getHomes()
+                .stream()
+                .sorted(Comparator.comparing(Home::creationTimestamp))
+                .collect(Collectors.toList());
     }
 
     @Override
