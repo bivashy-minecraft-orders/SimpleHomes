@@ -67,7 +67,7 @@ public class HomesPlayer {
                 try {
                     String name = entry.getKey();
                     JsonObject homeObject = entry.getValue().getAsJsonObject();
-                    Home newHome = new Home(name, homeObject.get("location").getAsJsonObject(), homeObject.get("currentTimestamp").getAsLong());
+                    Home newHome = new Home(name, homeObject.get("location").getAsJsonObject(), homeObject.get("creationTimestamp").getAsLong());
                     addHome(newHome);
                 } catch (IllegalArgumentException ex) {
                     ex.printStackTrace();
